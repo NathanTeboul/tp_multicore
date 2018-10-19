@@ -119,7 +119,8 @@ int main(int arg1, int arg2, int arg3, char fichier){
 	int cs = arg1*k;		// taille totale de la cache (octet)
 	int bs = arg2;			// taille d un bloc en octet
 	int assoc = arg3;		// degre associativite
-	int nbe cs/(bs*assoc);	// nombre d ensemble
+	int nbe cs/(bs*assoc);	// nombre d ensemble	
+	FILE* tr= Null;			//creation d une variable file
 
 	//print simple pour verif.
 	printf("cache size : %d \nBloc size : %d \nAssociativite : %d \nNombre ensembles : %d\n", cs, bs, assoc, nbe);
@@ -132,11 +133,10 @@ int main(int arg1, int arg2, int arg3, char fichier){
     int nbr_r=0, nbr_w=0; 
 
     //ouverture du fichier passer en para avec l arg lecture seule
-	FILE* tr= Null;
 	tr = fopen(fichier, "r");
 
 	//traitement du fichier
-
+	traitement(tr, cache,cs, bs, assoc, nbe);
 
 	//fermeture fichier
 	fclose(tr), tr=Null;

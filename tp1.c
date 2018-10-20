@@ -23,14 +23,15 @@ typedef bloc Cache [nbe][assoc];
 void init_tab (int nbe, int assoc, Cache cache)
 {
     int i, j;
-    for (i=0; i<lt;nbe; i++)
+    for (i=0; i<nbe; i++)
     {
-        for (j=0; j<lt;assoc; j++)
+        for (j=0; j<assoc; j++)
         {
             cache[i][j].valid=0;
-            cache[i][j].index=0;
-            cache[i][j].numbloc=0;
-            cache[i][j].tag=0;
+           // Pas besoin de les init je crois
+            //cache[i][j].index=0;
+            //cache[i][j].numbloc=0;
+            //cache[i][j].tag=0;;
         }
     }
 }
@@ -71,11 +72,20 @@ void check(int arg1, int arg2, int arg3, char fichier){
 }
 
 
-void traitement (File *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
+void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
 	int cs = Cs;
 	int bs = Bs;
 	int assoc = Assoc;
 	int nbe= Nbe;
+	//calcul
+	int numbloc, index, tag;
+	int m = 0;
+	int h = 0;
+	// localisation dans le bloc (bl doit etre < assoc)
+	int bl = 0;
+	// lecture du fichier
+	char car;
+	char adr;
 
     while (!feof(tr))
     {
@@ -87,9 +97,11 @@ void traitement (File *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
         // calcul de l'etiquette
         tag = numbloc / nbe;
         // cherche dans les blocs de la ligne si le tag existe
-        a =0;
-        trouve=0;
-        while (a<assoc &  trouve == 0)
+        int a =0;
+        int trouve=0;
+	    
+        // on cherche si la donnee est deja dans le cache
+        while ((a<assoc) &  (trouve == 0))
         {
             //si le bloc est vide ou si le tag n'existe pas on incremente la valeur a
             if  ((cache[index][a].valid == 0) || (cache[index][a].tag != tag)) 
@@ -100,10 +112,19 @@ void traitement (File *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
         }
         
         
+               // si la donnee n'est pas deja dans le cache, il faut l'ajouter
         if (trouve==0) // defaut..
-            //incrementer le nombre de defaut
+            //incrementer le nombre de defaut (miss) --> il faut donc ajouter la donnée au cache
         {
-
+            m++;
+            if (bl<assoc){
+            cache[index][bl].valid = 1;
+            cache[index][bl].tag = tag;
+            bl++;
+            }
+            else {
+                // methode FIFO
+            }
         }
     }
 

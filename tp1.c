@@ -23,14 +23,15 @@ typedef bloc Cache [nbe][assoc];
 void init_tab (int nbe, int assoc, Cache cache)
 {
     int i, j;
-    for (i=0; i<lt;nbe; i++)
+    for (i=0; i<nbe; i++)
     {
-        for (j=0; j<lt;assoc; j++)
+        for (j=0; j<assoc; j++)
         {
             cache[i][j].valid=0;
-            cache[i][j].index=0;
-            cache[i][j].numbloc=0;
-            cache[i][j].tag=0;
+           // Pas besoin de les init je crois
+            //cache[i][j].index=0;
+            //cache[i][j].numbloc=0;
+            //cache[i][j].tag=0;;
         }
     }
 }
@@ -70,12 +71,56 @@ void check(int arg1, int arg2, int arg3, char fichier){
 	}
 }
 
+//nop
+void choix_affichage(Cache cache){
+	int nombre = 0;
+	int res;
 
-void traitement (File *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
+	
+	do{
+		printf("entrée 1 si vous voulez afficher le tableau de cache, sinon 0")
+		res = scanf("%d", &nombre);
+
+	}while( res == 1 || res == 0 );
+
+	if(res == 1){
+		affichage_tab(cache);
+	}
+}
+
+//ok
+void affichage_tab(Cache cache){
+	int i, j;
+    for (i=0; i<lt;nbe; i++)
+    {
+        for (j=0; j<lt;assoc; j++)
+        {
+        	printf("index :%d ,numbloc :%d , tag :%d \n", cache[i][j].index, cache[i][j].numbloc, cache[i][j].tag);
+        }
+    }
+}
+
+//ok
+void affichage(Cache cache,int nbr_r, int nbr_w ){
+
+    printf("il y a eu : %d lecture \n il y a eu : %d ecriture \n", nbr_r, nbr_w);
+    choix_affichage(cache);
+}
+
+void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
 	int cs = Cs;
 	int bs = Bs;
 	int assoc = Assoc;
 	int nbe= Nbe;
+	//calcul
+	int numbloc, index, tag;
+	int m = 0;
+	int h = 0;
+	// localisation dans le bloc (bl doit etre < assoc)
+	int bl = 0;
+	// lecture du fichier
+	char car;
+	char adr;
 
     while (!feof(tr))
     {
@@ -87,9 +132,11 @@ void traitement (File *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
         // calcul de l'etiquette
         tag = numbloc / nbe;
         // cherche dans les blocs de la ligne si le tag existe
-        a =0;
-        trouve=0;
-        while (a<assoc &  trouve == 0)
+        int a =0;
+        int trouve=0;
+	    
+        // on cherche si la donnee est deja dans le cache
+        while ((a<assoc) &  (trouve == 0))
         {
             //si le bloc est vide ou si le tag n'existe pas on incremente la valeur a
             if  ((cache[index][a].valid == 0) || (cache[index][a].tag != tag)) 
@@ -100,10 +147,19 @@ void traitement (File *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
         }
         
         
+               // si la donnee n'est pas deja dans le cache, il faut l'ajouter
         if (trouve==0) // defaut..
-            //incrementer le nombre de defaut
+            //incrementer le nombre de defaut (miss) --> il faut donc ajouter la donnée au cache
         {
-
+            m++;
+            if (bl<assoc){
+            cache[index][bl].valid = 1;
+            cache[index][bl].tag = tag;
+            bl++;
+            }
+            else {
+                // methode FIFO
+            }
         }
     }
 
@@ -138,9 +194,11 @@ int main(int arg1, int arg2, int arg3, char fichier){
 	//traitement du fichier
 	traitement(tr, cache,cs, bs, assoc, nbe);
 
+	//affichage
+	affichage(cache, nbr_r, nbr_w);
+
 	//fermeture fichier
 	fclose(tr), tr=Null;
 
-    printf("il y a eu : %d lecture \n il y a eu : %d ecriture \n", nbr_r, nbr_w);
     return 1;
 }

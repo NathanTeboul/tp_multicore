@@ -76,7 +76,6 @@ void choix_affichage(Cache cache){
 	int nombre = 0;
 	int res;
 
-	
 	do{
 		printf("entrée 1 si vous voulez afficher le tableau de cache, sinon 0")
 		res = scanf("%d", &nombre);

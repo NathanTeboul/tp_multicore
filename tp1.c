@@ -11,7 +11,7 @@
 typedef struct t_bloc t_bloc;
 struct t_bloc
 {
-	//si 0 alors valid, sinon non valid
+	//si 0 alors vide, sinon non vide
     int valid;
     double index;
     double numbloc;
@@ -19,12 +19,13 @@ struct t_bloc
 };
 
 //typedef struct t_bloc Cache;
-void init_tab (int nbe, int assoc, t_bloc* cache)
+void init_tab (int nbe, int assoc, t_bloc *cache)
 {
+	/*
     int i, j;
     for (i=0; i<nbe; i++)
-    {	cache[i].valid=0;
-    	/*
+    {	//cache[i].valid=0;
+    	
         for (j=0; j<assoc; j++)
         {
             cache[i][j].valid=0;
@@ -33,8 +34,18 @@ void init_tab (int nbe, int assoc, t_bloc* cache)
             //cache[i][j].numbloc=0;
             //cache[i][j].tag=0;;
 
-        }*/
+        }
     }
+    */
+
+  	int i, j;
+  	for( i=0; i<nbe; i++){
+    	for( j=0; j<assoc; j++){
+      		cache[i*nbe+j].valid=0;
+    	}
+  
+	}
+
 }
 
 /*
@@ -74,7 +85,7 @@ void check(int arg1, int arg2, int arg3, char fichier){
 }
 
 //nop
-void choix_affichage(Cache cache){
+void choix_affichage(int nbe, int assoc, t_bloc* cache){
 	int nombre = 0;
 	int res;
 
@@ -85,29 +96,29 @@ void choix_affichage(Cache cache){
 	}while( res == 1 || res == 0 );
 
 	if(res == 1){
-		affichage_tab(cache);
+		affichage_tab(nbe, assoc, cache);
 	}
 }
+*/
 
 //ok
-void affichage_tab(Cache cache){
+void affichage_tab(int nbe, int assoc, t_bloc *cache){
 	int i, j;
-    for (i=0; i<lt;nbe; i++)
+    for (i=0; i<nbe; i++)
     {
-        for (j=0; j<lt;assoc; j++)
+        for (j=0; j<assoc; j++)
         {
-        	printf("index :%d ,numbloc :%d , tag :%d \n", cache[i][j].index, cache[i][j].numbloc, cache[i][j].tag);
+        	printf("index :%lf ,numbloc :%lf , tag :%lf \n", cache[i*nbe+j].index, cache[i*nbe+j].numbloc, cache[i*nbe+j].tag);
         }
     }
 }
 
 //ok
-void affichage(Cache cache,int nbr_r, int nbr_w ){
+void affichage(int nbr_r, int nbr_w ){
 
-    printf("il y a eu : %d lecture \n il y a eu : %d ecriture \n", nbr_r, nbr_w);
-    choix_affichage(cache);
+    printf("il y a eu : %d lecture \nil y a eu : %d ecriture \n", nbr_r, nbr_w);
 }
-*/
+
 /*
 void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
 	int cs = Cs;
@@ -201,57 +212,36 @@ int main (int argc,char **argv){
 	//check(arg1, arg2, arg3, argv[4]);
 
 	int k =1024;			// taille d un octet
-	int cs = arg1*k;		// taille totale de la cache (octet)
+	//int cs = arg1*k;		// taille tt cache si on ne mult pas par 4
+	int cs = arg1;			// taille totale de la cache (octet)
 	int bs = arg2;			// taille d un bloc en octet
 	int assoc = arg3;		// degre associativite
-	int nbe = cs/(bs*assoc);	// nombre d ensemble	
+	int nbe = cs/(bs*assoc);	// nombre d ensemble
 	FILE *tr= NULL;			//creation d une variable file
 
+   	//compteur de read et write
+    int nbr_r=0, nbr_w=0; 
+
 	//print simple pour verif.
-	printf("cache size : %d \nBloc size : %d \nAssociativite : %d \nNombre ensembles : %d\n", cs, bs, assoc, nbe);
+	printf("cache size : %d \nBloc size : %d \nAssociativite : %d \nNombre d'ensembles : %d\n", cs, bs, assoc, nbe);
 
     //creation du tableau correspondant au donne rentre et init a 0 de celui ci
     //t_bloc cache[nbe][assoc];
-	t_bloc cache[nbe];
+	t_bloc cache[nbe*assoc];
 
-    init_tab(nbe, assoc, cache);
-/*
-int i, j;
-    for (i=0; i<nbe; i++)
-    {
-        for (j=0; j<assoc; j++)
-        {
-            cache[i][j].valid=0;
-           // Pas besoin de les init je crois
-            //cache[i][j].index=0;
-            //cache[i][j].numbloc=0;
-            //cache[i][j].tag=0;;
-
-        }
-    }
-
-      for (i=0; i<nbe; i++)
-    {
-        for (j=0; j<assoc; j++)
-        {
-    		printf("%d \n",cache[i][j].valid);
-    	}
-    }
-*/
-    //compteur de read et write
-    int nbr_r=0, nbr_w=0; 
-
+    init_tab(nbe, assoc, cache); //probleme de core dump ici !!!!
+ 
     //ouverture du fichier passer en para avec l arg lecture seule
 	tr = fopen(argv[4], "r");
 
 	//traitement du fichier
-//	traitement(tr, cache,cs, bs, assoc, nbe);
-
-	//affichage
-//	affichage(cache, nbr_r, nbr_w);	
+	//traitement(tr, cache,cs, bs, assoc, nbe);
 
 	test(tr);
 	
+	//affichage
+	affichage( nbr_r, nbr_w);	
+
 	//fermeture fichier
 	fclose(tr), tr=NULL;
 

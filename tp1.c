@@ -165,8 +165,20 @@ void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
     //return cache;
 }
 
+void test(){
+	// lecture du fichier
+	char car;
+	char adr;
+
+        
+    fscanf (f, "%c %X\n", &car, &adr);
+
+	printf("%c %X \n", car,adr);
+}
+int main (char fichier){
+/*
 int main(int arg1, int arg2, int arg3, char fichier){
-	
+
 	//verif si donnees rentree en para
 	check(arg1, arg2, arg3, fichier);
 
@@ -195,7 +207,13 @@ int main(int arg1, int arg2, int arg3, char fichier){
 
 	//affichage
 	affichage(cache, nbr_r, nbr_w);
+*/
+	FILE* tr= Null;	
 
+	tr = fopen(fichier, "r");
+
+	test(fichier);
+	
 	//fermeture fichier
 	fclose(tr), tr=Null;
 

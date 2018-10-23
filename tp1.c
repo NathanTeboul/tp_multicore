@@ -8,23 +8,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct bloc
+typedef struct t_bloc t_bloc;
+struct t_bloc
 {
 	//si 0 alors valid, sinon non valid
     int valid;
     double index;
     double numbloc;
     double tag; 
-}
-t_bloc;
+};
 
 //typedef struct t_bloc Cache;
-
-void init_tab (int nbe, int assoc, t_bloc *cache[nbe][assoc])
+void init_tab (int nbe, int assoc, t_bloc* cache)
 {
     int i, j;
     for (i=0; i<nbe; i++)
-    {
+    {	cache[i].valid=0;
+    	/*
         for (j=0; j<assoc; j++)
         {
             cache[i][j].valid=0;
@@ -33,7 +33,7 @@ void init_tab (int nbe, int assoc, t_bloc *cache[nbe][assoc])
             //cache[i][j].numbloc=0;
             //cache[i][j].tag=0;;
 
-        }
+        }*/
     }
 }
 
@@ -211,9 +211,10 @@ int main (int argc,char **argv){
 	printf("cache size : %d \nBloc size : %d \nAssociativite : %d \nNombre ensembles : %d\n", cs, bs, assoc, nbe);
 
     //creation du tableau correspondant au donne rentre et init a 0 de celui ci
-    t_bloc cache[nbe][assoc];
+    //t_bloc cache[nbe][assoc];
+	t_bloc cache[nbe];
 
-    init_tab(nbe, assoc, cache[nbe][assoc]);
+    init_tab(nbe, assoc, cache);
 /*
 int i, j;
     for (i=0; i<nbe; i++)

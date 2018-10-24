@@ -8,9 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+//variable global
+
+int nbr_r=0;
+int nbr_w=0; 
+
 typedef struct t_bloc t_bloc;
-struct t_bloc
-{
+struct t_bloc{
 	//si 0 alors vide, sinon non vide
     int valid;
     double index;
@@ -19,33 +23,15 @@ struct t_bloc
 };
 
 //typedef struct t_bloc Cache;
-void init_tab (int nbe, int assoc, t_bloc *cache)
-{
-	/*
+void init_tab (int nbe, int assoc, t_bloc cache[nbe][assoc]){
+	
     int i, j;
-    for (i=0; i<nbe; i++)
-    {	//cache[i].valid=0;
+    for (i=0; i<nbe; i++){	
     	
-        for (j=0; j<assoc; j++)
-        {
+        for (j=0; j<assoc; j++){
             cache[i][j].valid=0;
-           // Pas besoin de les init je crois
-            //cache[i][j].index=0;
-            //cache[i][j].numbloc=0;
-            //cache[i][j].tag=0;;
-
         }
     }
-    */
-
-  	int i, j;
-  	for( i=0; i<nbe; i++){
-    	for( j=0; j<assoc; j++){
-      		cache[i*nbe+j].valid=0;
-    	}
-  
-	}
-
 }
 
 /*
@@ -85,7 +71,7 @@ void check(int arg1, int arg2, int arg3, char fichier){
 }
 
 //nop
-void choix_affichage(int nbe, int assoc, t_bloc* cache){
+void choix_affichage(int nbe, int assoc, t_bloc cache[nbe][assoc]){
 	int nombre = 0;
 	int res;
 
@@ -102,13 +88,13 @@ void choix_affichage(int nbe, int assoc, t_bloc* cache){
 */
 
 //ok
-void affichage_tab(int nbe, int assoc, t_bloc *cache){
+void affichage_tab(int nbe, int assoc, t_bloc cache[nbe][assoc]){
 	int i, j;
     for (i=0; i<nbe; i++)
     {
         for (j=0; j<assoc; j++)
         {
-        	printf("index :%lf ,numbloc :%lf , tag :%lf \n", cache[i*nbe+j].index, cache[i*nbe+j].numbloc, cache[i*nbe+j].tag);
+        	printf("index :%lf ,numbloc :%lf , tag :%lf \n", cache[i][j].index, cache[i][j].numbloc, cache[i][j].tag);
         }
     }
 }
@@ -119,12 +105,8 @@ void affichage(int nbr_r, int nbr_w ){
     printf("il y a eu : %d lecture \nil y a eu : %d ecriture \n", nbr_r, nbr_w);
 }
 
-/*
-void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
-	int cs = Cs;
-	int bs = Bs;
-	int assoc = Assoc;
-	int nbe= Nbe;
+void traitement (FILE *tr,int cs, int bs, int assoc, int nbe, t_bloc cache[nbe][assoc]){
+
 	//calcul
 	int numbloc, index, tag;
 	int m = 0;
@@ -133,13 +115,12 @@ void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
 	int bl = 0;
 	// lecture du fichier
 	char car;
-	char adr;
+	char adr[10];
 
-    while (!feof(tr))
-    {
-        fscanf (tr, "%c %X\n", &car, &adr);
+    while (!feof(tr)){
+        fscanf (tr, "%c %s\n", &car, &adr[0]);
         // calcul du nombre de bloc
-        numbloc = adr / bs;
+        numbloc = atoi(adr) / bs;
         //calcul de l'index (numero de la ligne du tableau Cache)
         index = numbloc % nbe;
         // calcul de l'etiquette
@@ -147,52 +128,70 @@ void traitement (FILE *tr, Cache cache,int Cs, int Bs, int Assoc, int Nbe){
         // cherche dans les blocs de la ligne si le tag existe
         int a =0;
         int trouve=0;
-	    
+
+        printf("numbloc = %d, index = %d, tag = %d \n", numbloc,index,tag);
+	    printf("%c %s \n", car, adr);
+
+	    //gestion du r et w
+	    if(car=='R'){
+	    	nbr_r++;
+	    }
+	    if(car=='W'){
+	    	nbr_w++;
+	    }
+
         // on cherche si la donnee est deja dans le cache
         while ((a<assoc) &  (trouve == 0))
         {
             //si le bloc est vide ou si le tag n'existe pas on incremente la valeur a
             if  ((cache[index][a].valid == 0) || (cache[index][a].tag != tag)) 
                 {a++;}
-            else
+            else{
                 // sinon (on trouve) on arrete la recherche et on incremente le compteur de hits
-                {trouve = 1; h++;}
+                trouve = 1; 
+                h++;
+            }
         }
         
-        
-               // si la donnee n'est pas deja dans le cache, il faut l'ajouter
-        if (trouve==0) // defaut..
+        // si la donnee n'est pas deja dans le cache, il faut l'ajouter
+        if (trouve==0){
             //incrementer le nombre de defaut (miss) --> il faut donc ajouter la donnée au cache
-        {
             m++;
             if (bl<assoc){
-            cache[index][bl].valid = 1;
-            cache[index][bl].tag = tag;
-            bl++;
-            }
-            else {
+            	cache[index][bl].valid = 1;
+           		cache[index][bl].tag = tag;
+            	bl++;
+        	}
+        	else {
                 // methode FIFO
-                //aide
-                 fgets(fichier,"%s",type[i].nom);
-           	 	fscanf(fichier,"   %d %d",&type[i].prix,type[i].temps);
-            }
+
+        	}
         }
     }
-
-    //return cache;
+    //aide
+    	// fgets(fichier,"%s",type[i].nom);
+        //fscanf(fichier,"   %d %d",&type[i].prix,type[i].temps);
+        //char vers decimal = stroil()
 }
-*/
+
 void test(FILE *tr){
 	// lecture du fichier
 	char car;
 	char adr[10];
 
-       while (!feof(tr))
-    {  
-    fscanf (tr, "%c %s \n", &car, &adr[0]);
+    while (!feof(tr)){  
+    	fscanf (tr, "%c %s \n", &car, &adr[0]);
 
-	printf("%c %s \n", car, adr);
-}
+		printf("%c %s \n", car, adr);
+
+		if(car == 'R'){
+	    	nbr_r++;
+	    }
+	    else if(car == 'W'){
+	    	nbr_w++;
+	    }
+
+	}
 }
 int main (int argc,char **argv){
 
@@ -205,29 +204,22 @@ int main (int argc,char **argv){
 	int arg2 = atoi(argv[2]);
 	int arg3 = atoi(argv[3]);
 
-	printf("%d %d %d \n", arg1,arg2, arg3);
-
-
 	//verif si donnees rentree en para
 	//check(arg1, arg2, arg3, argv[4]);
 
 	int k =1024;			// taille d un octet
-	//int cs = arg1*k;		// taille tt cache si on ne mult pas par 4
+	//int cs = arg1*k;		// taille ttl cache si on ne mult pas par 1024
 	int cs = arg1;			// taille totale de la cache (octet)
 	int bs = arg2;			// taille d un bloc en octet
 	int assoc = arg3;		// degre associativite
 	int nbe = cs/(bs*assoc);	// nombre d ensemble
 	FILE *tr= NULL;			//creation d une variable file
 
-   	//compteur de read et write
-    int nbr_r=0, nbr_w=0; 
-
 	//print simple pour verif.
 	printf("cache size : %d \nBloc size : %d \nAssociativite : %d \nNombre d'ensembles : %d\n", cs, bs, assoc, nbe);
 
     //creation du tableau correspondant au donne rentre et init a 0 de celui ci
-    //t_bloc cache[nbe][assoc];
-	t_bloc cache[nbe*assoc];
+    t_bloc cache[nbe][assoc];
 
     init_tab(nbe, assoc, cache); //probleme de core dump ici !!!!
  
@@ -245,5 +237,5 @@ int main (int argc,char **argv){
 	//fermeture fichier
 	fclose(tr), tr=NULL;
 
-    return 999999;
+    return 999;
 }

@@ -93,7 +93,8 @@ void affichage_tab(int nbe, int assoc, t_bloc cache[nbe][assoc]){
 void affichage_tab_temp(int *incr){
 	printf("-----------------------------------------\n");
 	printf("tableau tempo :\n");
-	for (int i=0; i<7; i++){
+	int i=0;
+	for (i=0; i<7; i++){
 		printf("ligne %d : %d \n",i, incr[i]);
     }	
 }
